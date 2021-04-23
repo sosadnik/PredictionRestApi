@@ -30,7 +30,7 @@ public class EfficiencyCalculator {
         return statistics;
     }
 
-    private double getEffectiveness(double won, double other, double i) {
+    public double getEffectiveness(double won, double other, double i) {
         if (i - other != 0) {
             return (won / (i - other)) * 100;
         } else {
