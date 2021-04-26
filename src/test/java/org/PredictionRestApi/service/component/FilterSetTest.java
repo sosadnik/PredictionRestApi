@@ -1,6 +1,7 @@
 package org.PredictionRestApi.service.component;
 
 
+import liquibase.pro.packaged.D;
 import org.PredictionRestApi.entity.CompetitionEfficiency;
 import org.PredictionRestApi.entity.Prediction;
 import org.PredictionRestApi.repository.AwayTeamEfficiencyRepository;
@@ -20,23 +21,42 @@ import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class FilterSetTest {
 
     private CompetitionEfficiencyRepository competitionEfficiencyRepository;
     private AwayTeamEfficiencyRepository awayTeamEfficiencyRepository;
+    private HomeTeamEfficiencyRepository homeTeamEfficiencyRepository;
     private PredictionRepository predictionRepository;
     private FilterSet filterSet;
 
     @Before
     public void setup() {
         competitionEfficiencyRepository = mock(CompetitionEfficiencyRepository.class);
-        HomeTeamEfficiencyRepository homeTeamEfficiencyRepository = mock(HomeTeamEfficiencyRepository.class);
+        homeTeamEfficiencyRepository = mock(HomeTeamEfficiencyRepository.class);
         awayTeamEfficiencyRepository = mock(AwayTeamEfficiencyRepository.class);
         predictionRepository = mock(PredictionRepository.class);
         filterSet = new FilterSet(competitionEfficiencyRepository, homeTeamEfficiencyRepository, awayTeamEfficiencyRepository, predictionRepository);
+    }
+
+    @Test
+    public void filteringForMinimumEfficiency() {
+        List<Prediction> predictionList = new ArrayList<>();
+        predictionList.add(Prediction.builder().competitionName("name1").date(new Date()).build());
+        predictionList.add(Prediction.builder().competitionName("name2").date(new Date()).build());
+        predictionList.add(Prediction.builder().competitionName("name3").date(new Date()).build());
+        List<Prediction> expected = new ArrayList<>();
+        expected.add(Prediction.builder().competitionName("name1").date(new Date()).build());
+        expected.add(Prediction.builder().competitionName("name3").date(new Date()).build());
+
+        when(filterSet.getTodayPredictions()).thenReturn(predictionList);
+        when(competitionEfficiencyRepository.findByCompetitionName("name1")).thenReturn(CompetitionEfficiency.builder().efficacy(75.).build());
+        when(competitionEfficiencyRepository.findByCompetitionName("name2")).thenReturn(CompetitionEfficiency.builder().efficacy(60.).build());
+        when(competitionEfficiencyRepository.findByCompetitionName("name3")).thenReturn(CompetitionEfficiency.builder().efficacy(80.).build());
+        List<Prediction> actual = filterSet.filteringForMinimumEfficiency();
+
+        assertEquals(expected, actual);
     }
 
     @Test
