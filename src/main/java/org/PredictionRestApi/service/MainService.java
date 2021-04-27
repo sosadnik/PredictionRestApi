@@ -25,22 +25,28 @@ public class MainService {
         //update Prediction with status pending
         predictionService.update();
 
-        //update Competition
+        updateCompetition();
+
+        updateHomeTeam();
+
+        updateAwayTeam();
+    }
+
+    public void updateCompetition() {
         for (String name : competitionEfficiencyService.getListCompetitionName(predictionRepository.findAll())) {
             competitionEfficiencyService.efficiencyBuild(filterSet.filterPredictionByCompetitionName(name));
         }
+    }
 
-        //update HomeTeam
+    public void updateHomeTeam() {
         for (String name : homeTeamEfficiencyService.getListTeamName(predictionRepository.findAll())) {
             homeTeamEfficiencyService.efficiencyBuild(filterSet.filterPredictionByHomeTeamName(name));
         }
+    }
 
-        //update AwayTeam
+    public void updateAwayTeam() {
         for (String name : awayTeamEfficiencyService.getListTeamName(predictionRepository.findAll())) {
             awayTeamEfficiencyService.efficiencyBuild(filterSet.filterPredictionByAwayTeamName(name));
         }
     }
-
-
-
 }
