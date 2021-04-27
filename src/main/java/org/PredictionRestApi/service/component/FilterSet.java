@@ -82,4 +82,10 @@ public class FilterSet {
         LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         return localDate.getMonthValue();
     }
+
+    public int getYear(){
+        Date date = new Date();
+        LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        return localDate.getYear();
+    }
 }

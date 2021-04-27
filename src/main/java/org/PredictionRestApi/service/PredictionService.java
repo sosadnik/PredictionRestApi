@@ -33,7 +33,7 @@ public class PredictionService {
         saveUpdate(predictionsWithStatusPending, filterSet.getDatesWithoutRepeating(predictionsWithStatusPending));
     }
 
-    private void saveUpdate(List<Prediction> predictionsList, List<Date> dateList) {
+    public void saveUpdate(List<Prediction> predictionsList, List<Date> dateList) {
         for (Date date : dateList) {
             PredictionDataDto dto = predictionsClient.getPrediction(date.toString().substring(0, 10));
 
@@ -67,23 +67,27 @@ public class PredictionService {
         return list;
     }
 
-    public void dataToBaseRequest(int dayFrom, int dayTo, int monthFrom) throws ParseException {
-        String year = "2021";
+    public void downloadDataToDatabase(int dayFrom, int dayTo, int monthFrom) throws ParseException {
+        String monthString, dayString, dataForRequest, year = String.valueOf(filterSet.getYear());
         for (int day = dayFrom; day <= dayTo; day++) {
-            String monthString, dayString;
-            if (monthFrom > 9) monthString = String.valueOf(monthFrom);
-            else monthString = "0" + String.valueOf(monthFrom);
-            if (day > 9) dayString = String.valueOf(day);
-            else dayString = "0" + String.valueOf(day);
+            if (monthFrom > 9) {
+                monthString = String.valueOf(monthFrom);
+            } else {
+                monthString = "0" + (monthFrom);
+            }
+            if (day > 9) {
+                dayString = String.valueOf(day);
+            } else {
+                dayString = "0" + (day);
+            }
+            dataForRequest = "%s-%s-%s".formatted(year, monthString, dayString);
 
-            save(year + "-" + monthString + "-" + dayString);
+            save(predictionsClient.getPrediction(dataForRequest),
+                    new SimpleDateFormat("yyyy-MM-dd").parse(dataForRequest));
         }
     }
 
-    public void save(String dateForRequest) throws ParseException {
-        PredictionDataDto predictionData = predictionsClient.getPrediction(dateForRequest);
-        Date date = new SimpleDateFormat("yyyy-MM-dd").parse(dateForRequest);
-
+    public void save(PredictionDataDto predictionData, Date date) {
         for (int i = 0; predictionData.getData().size() > i; i++) {
             if (!repository.existsByHomeTeamAndDate(predictionData.getData().get(i).getHome_team(), date)) {
                 Prediction prediction = Prediction.builder()

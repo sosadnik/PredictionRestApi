@@ -20,7 +20,7 @@ public class MainService {
 
     public void setup() throws ParseException {
         //get prediction from other rest api
-        predictionService.dataToBaseRequest(filterSet.getDay(), filterSet.getDay(), filterSet.getMonth());
+        predictionService.downloadDataToDatabase(filterSet.getDay(), filterSet.getDay(), filterSet.getMonth());
 
         //update Prediction with status pending
         predictionService.update();

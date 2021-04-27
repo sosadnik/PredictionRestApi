@@ -1,9 +1,11 @@
 package org.PredictionRestApi.webclient.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@Builder
 public class OddsDto {
     @JsonProperty("1")
     private Double won1;
